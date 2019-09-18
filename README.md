@@ -1,6 +1,6 @@
 # CashinGame Quiz Application
 
-CashinGame quiz is a game application which enable the users to answers questions and test their ability. 
+CashinGame quiz is a game application which enable the users to answer questions and test their ability. 
 Also results are being computed in real time.
 
 # Prerequisites
