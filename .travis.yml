@@ -1,5 +1,7 @@
-language: csharp
-mono: none
-dotnet: 2.1
-script:
- - dotnet restore
+ language: csharp
+ solution: CashinGame.Quiz.sln
+ mono: none
+ dotnet: 2.1
+ install:
+  - nuget restore CashinGame.Quiz.sln
+ 
