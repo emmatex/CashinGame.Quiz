@@ -3,25 +3,25 @@
 CashinGame quiz is a game application which enable the users to answer questions and test their ability. 
 Also results are being computed in real time.
 
-# Prerequisites
+## Prerequisites
  1. Build the project
  2. Run migration by doing the following :  
-     Add-Migraton InitialCreate  
-		 Update-Database
+    - Add-Migraton InitialCreate  
+    - Update-Database
      
-# Technical details
+## Technical details
 Below you can find information regarding the technical details of the solution
 
-# Architectural styles
-1. Layered architecture 
-2. REST
+## Architectural styles
+- Layered architecture 
+- REST
 
-# Design pattern
-1. Task-based Asynchronous Pattern(TAP) 
-2. Dependency Injection Pattern (DI) 
-3. Repository Pattern
+## Design pattern
+- Task-based Asynchronous Pattern(TAP) 
+- Dependency Injection Pattern (DI) 
+- Repository Pattern
 
-# Technology stack
-1. DotNetCore Api 
-2. PostgreSQL 
-3. Entity Framework Core
+## Technology stack
+- DotNetCore Api 
+- PostgreSQL 
+- Entity Framework Core
