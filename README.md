@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/emmatex/ConsoleGameEngine.svg?branch=master)](https://travis-ci.org/emmatex/ConsoleGameEngine)
+[![Bintray](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
+[![Bintray](https://img.shields.io/badge/made%20with-dotnetcore2.1-blue.svg?style=flat-square?maxAge=2592000)]()
+
+
 # CashinGame Quiz Application
 
 CashinGame quiz is a game application which enable the users to answer questions and test their ability. 
