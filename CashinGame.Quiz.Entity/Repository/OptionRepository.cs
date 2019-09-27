@@ -17,6 +17,35 @@ namespace CashinGame.Quiz.Entity.Repository
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public async Task<IEnumerable<Option>> GetOptionAsync(Guid questionId)
+        {
+            if (questionId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(questionId));
+            }
+
+            return await _context.Options.Include(x => x.Question)
+                .Where(x => x.QuestionId == questionId)
+                .ToListAsync();
+        }
+
+        public async Task<Option> GetOptionAsync(Guid questionId, Guid optionId)
+        {
+            if (questionId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(questionId));
+            }
+
+            if (optionId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(optionId));
+            }
+
+            return await _context.Options.Include(x => x.Question)
+                .Where(x => x.QuestionId == questionId && x.Id == optionId)
+                .FirstOrDefaultAsync();
+        }
+
         public void Add(Option option)
         {
             if (option == null)
@@ -44,9 +73,9 @@ namespace CashinGame.Quiz.Entity.Repository
             return await _context.Options.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<bool> isExists(Guid id)
+        public async Task<bool> isExists(Guid questionId, string value)
         {
-            return await _context.Options.AnyAsync(a => a.Id == id);
+            return await _context.Options.AnyAsync(a => a.QuestionId == questionId && a.Value == value);
         }
 
         public async Task<bool> SaveChangesAsync()

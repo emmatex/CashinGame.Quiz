@@ -9,11 +9,13 @@ namespace CashinGame.Quiz.Entity.Interface
     public interface IQuestionRepository : IDisposable
     {
         Task<IEnumerable<Question>> GetAsync();
-        Task<Question> GetByIdAsync(Guid id);
+        Question GetById(Guid id);
         void Add(Question question);
+        void AddOptionForQuestion(Guid questionId, Option option);
         void Delete(Question question);
         void Update(Question question);
         Task<bool> isExists(Guid id);
+        Task<bool> isQuestionTextExist(string questionText);
         Task<bool> SaveChangesAsync();
     }
 }

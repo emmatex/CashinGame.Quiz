@@ -1,11 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using CashinGame.Quiz.Api.Models;
+using CashinGame.Quiz.Entity.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CashinGame.Quiz.Api.Profiles
 {
-    public class QuestionProfile
+    public class QuestionProfile : Profile
     {
+        public QuestionProfile()
+        {
+            CreateMap<Question, QuestionDto>();
+        }
     }
 }

@@ -29,6 +29,21 @@ namespace CashinGame.Quiz.Entity.Repository
             _context.Questions.Add(question);
         }
 
+        public void AddOptionForQuestion(Guid questionId, Option option)
+        {
+            var question = GetById(questionId);
+            if (question != null)
+            {
+                // if there isn't an id filled out (ie: we're not upserting),
+                // we should generate one
+                if (option.Id == Guid.Empty)
+                {
+                    option.Id = Guid.NewGuid();
+                }
+                question.Options.Add(option);
+            }
+        }
+
         public void Delete(Question question)
         {
             _context.Questions.Remove(question);
@@ -39,14 +54,19 @@ namespace CashinGame.Quiz.Entity.Repository
             return await _context.Questions.OrderBy(x => x.QuestionText).ToListAsync();
         }
 
-        public async Task<Question> GetByIdAsync(Guid id)
+        public Question GetById(Guid id)
         {
-            return await _context.Questions.FirstOrDefaultAsync(p => p.Id == id);
+            return _context.Questions.FirstOrDefault(p => p.Id == id);
         }
 
         public async Task<bool> isExists(Guid id)
         {
             return await _context.Questions.AnyAsync(a => a.Id == id);
+        }
+
+        public async Task<bool> isQuestionTextExist(string questionText)
+        {
+            return await _context.Questions.AnyAsync(a => a.QuestionText == questionText);
         }
 
         public async Task<bool> SaveChangesAsync()

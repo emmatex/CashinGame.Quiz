@@ -8,6 +8,8 @@ namespace CashinGame.Quiz.Entity.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Avatar { get; set; }
+        public string Color { get; set; }
         public ICollection<Question> Questions { get; set; }
           = new List<Question>();
     }

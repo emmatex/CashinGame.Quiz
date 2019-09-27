@@ -72,7 +72,7 @@ namespace CashinGame.Quiz.Api.Controllers
             _repository.Add(categoryToAdd);
 
             if (!await _repository.SaveChangesAsync())
-                throw new Exception("Creating an author failed on save.");
+                throw new Exception("Creating  category failed on save.");
 
             return CreatedAtRoute("GetCategory", new { categoryId = categoryToAdd.Id },
                 _mapper.Map<Category>(categoryToAdd));
@@ -84,6 +84,7 @@ namespace CashinGame.Quiz.Api.Controllers
         /// <param name="category">The category with updated values</param>
         /// <returns>An ActionResult of type Category</returns>
         /// <response code="422">Validation error</response>
+        [HttpPut(Name = "UpdateCategory")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
         public async Task<ActionResult<Category>> UpdateCategory(CategoryDto category)
