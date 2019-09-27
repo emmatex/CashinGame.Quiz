@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/emmatex/ConsoleGameEngine.svg?branch=master)](https://travis-ci.org/emmatex/ConsoleGameEngine)
+[![Build Status](https://travis-ci.com/emmatex/CashinGame.Quiz.svg?branch=master)](https://travis-ci.com/emmatex/CashinGame.Quiz)
 [![Bintray](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
 [![Bintray](https://img.shields.io/badge/made%20with-dotnetcore2.1-blue.svg?style=flat-square?maxAge=2592000)]()
 
