@@ -4,6 +4,7 @@ using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,11 +18,13 @@ namespace CashinGame.Quiz.Api.Controllers
     {
         private readonly IQuestionRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ILogger<QuestionsController> _logger;
 
-        public QuestionsController(IQuestionRepository repository, IMapper mapper)
+        public QuestionsController(IQuestionRepository repository, IMapper mapper, ILogger<QuestionsController> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet(Name = "GetQuestions")]
@@ -47,10 +50,10 @@ namespace CashinGame.Quiz.Api.Controllers
         {
             if (question == null) return BadRequest();
 
+            if (!ModelState.IsValid) return new UnprocessableEntityObjectResult(ModelState);
+
             if (await _repository.isQuestionTextExist(question.QuestionText))
                 return BadRequest("The question text inputed already exist");
-
-            if (!ModelState.IsValid) return new UnprocessableEntityObjectResult(ModelState);
 
             var questionToAdd = _mapper.Map<Question>(question);
             _repository.Add(questionToAdd);
@@ -62,17 +65,21 @@ namespace CashinGame.Quiz.Api.Controllers
                 _mapper.Map<Category>(questionToAdd));
         }
 
-        [HttpPut(Name = "UpdateQuestion")]
+        [HttpPut("{questionId}", Name = "UpdateQuestion")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Category>> UpdateQuestion(QuestionDto question)
+        public async Task<ActionResult<Category>> UpdateQuestion(Guid questionId, UpdateQuestionDto question)
         {
-            var questionFromRepo = _repository.GetById(question.Id);
+            if (!ModelState.IsValid) return new UnprocessableEntityObjectResult(ModelState);
+
+            var questionFromRepo = _repository.GetById(questionId);
             if (questionFromRepo == null) return NotFound();
 
             _mapper.Map(question, questionFromRepo);
             _repository.Update(questionFromRepo);
-            await _repository.SaveChangesAsync();
+
+            if (!await _repository.SaveChangesAsync())
+                throw new Exception("An error occured while trying to updating question");
 
             return Ok(_mapper.Map<Category>(questionFromRepo));
         }

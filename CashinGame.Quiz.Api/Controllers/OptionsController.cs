@@ -4,6 +4,7 @@ using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,12 +19,15 @@ namespace CashinGame.Quiz.Api.Controllers
         private readonly IOptionRepository _optionRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<OptionsController> _logger;
 
-        public OptionsController(IOptionRepository optionRepository, IQuestionRepository questionRepository, IMapper mapper)
+        public OptionsController(IOptionRepository optionRepository, IQuestionRepository questionRepository, 
+            IMapper mapper, ILogger<OptionsController> logger)
         {
             _optionRepository = optionRepository;
             _questionRepository = questionRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -58,6 +62,10 @@ namespace CashinGame.Quiz.Api.Controllers
             if (!await _questionRepository.isExists(questionId))
                 return NotFound();
 
+            if (option == null) return BadRequest();
+
+            if (!ModelState.IsValid) return new UnprocessableEntityObjectResult(ModelState);
+
             if (await _optionRepository.isExists(questionId, option.Value))
                 return BadRequest("The value inputed already exist for that question");
 
@@ -71,10 +79,10 @@ namespace CashinGame.Quiz.Api.Controllers
                 _mapper.Map<Option>(optionToAdd));
         }
 
-        [HttpPut(Name = "UpdateOption")]
+        [HttpPut("{optionId}", Name = "UpdateOption")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Option>> UpdateOption(Guid questionId, [FromBody]UpdateOptionDto option)
+        public async Task<ActionResult<Option>> UpdateOption(Guid questionId, Guid optionId, [FromBody]UpdateOptionDto option)
         {
             if (option == null) return BadRequest();
 
@@ -84,15 +92,15 @@ namespace CashinGame.Quiz.Api.Controllers
             if (!await _questionRepository.isExists(questionId))
                 return NotFound();
 
-            var optionFromRepo = await _optionRepository.GetOptionAsync(questionId, option.Id);
+            var optionFromRepo = await _optionRepository.GetOptionAsync(questionId, optionId);
             if (optionFromRepo == null)
             {
                 var optionToAdd = Mapper.Map<Option>(option);
-                optionToAdd.Id = option.Id;
+                optionToAdd.Id = optionId;
                 _questionRepository.AddOptionForQuestion(questionId, optionToAdd);
 
                 if (!await _optionRepository.SaveChangesAsync())
-                    throw new Exception($"Upserting option {option.Id} for question {questionId} failed on save.");
+                    throw new Exception($"Upserting option {optionId} for question {questionId} failed on save.");
 
                 var optionToReturn = Mapper.Map<OptionDto>(optionToAdd);
                 return CreatedAtRoute("GetOption", new { id = optionToReturn.Id }, optionToReturn);
@@ -102,7 +110,7 @@ namespace CashinGame.Quiz.Api.Controllers
             _optionRepository.Update(optionFromRepo);
 
             if (!await _optionRepository.SaveChangesAsync())
-                throw new Exception($"Upserting option {option.Id} for question {questionId} failed on update.");
+                throw new Exception($"Upserting option {optionId} for question {questionId} failed on update.");
 
             return NoContent();
         }

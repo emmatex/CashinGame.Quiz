@@ -4,6 +4,7 @@ using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,10 +18,13 @@ namespace CashinGame.Quiz.Api.Controllers
     {
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
-        public CategoriesController(ICategoryRepository repository, IMapper mapper)
+        private readonly ILogger _logger;
+
+        public CategoriesController(ICategoryRepository repository, IMapper mapper, ILogger<CategoriesController> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -84,17 +88,23 @@ namespace CashinGame.Quiz.Api.Controllers
         /// <param name="category">The category with updated values</param>
         /// <returns>An ActionResult of type Category</returns>
         /// <response code="422">Validation error</response>
-        [HttpPut(Name = "UpdateCategory")]
+        [HttpPut("{categoryId}", Name = "UpdateCategory")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Category>> UpdateCategory(CategoryDto category)
+        public async Task<ActionResult<Category>> UpdateCategory(Guid categoryId, UpdateCategoryDto category)
         {
-            var categoryFromRepo =  await _repository.GetByIdAsync(category.Id);
+            if (category == null) return BadRequest();
+
+            if (!ModelState.IsValid) return new UnprocessableEntityObjectResult(ModelState);
+
+            var categoryFromRepo =  await _repository.GetByIdAsync(categoryId);
             if (categoryFromRepo == null) return NotFound();
 
             _mapper.Map(category, categoryFromRepo);
             _repository.Update(categoryFromRepo);
-            await _repository.SaveChangesAsync();
+
+            if (!await _repository.SaveChangesAsync())
+                throw new Exception("An error occured while trying to updating categories");
 
             return Ok(_mapper.Map<Category>(categoryFromRepo));
         }

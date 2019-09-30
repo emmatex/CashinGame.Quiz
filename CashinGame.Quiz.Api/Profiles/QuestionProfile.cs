@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using CashinGame.Quiz.Api.Models;
 using CashinGame.Quiz.Entity.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CashinGame.Quiz.Api.Profiles
 {
@@ -13,6 +9,9 @@ namespace CashinGame.Quiz.Api.Profiles
         public QuestionProfile()
         {
             CreateMap<Question, QuestionDto>();
+            CreateMap<CreateQuestionDto, Question>();
+            CreateMap<UpdateQuestionDto, Question>();
+            CreateMap<Question, UpdateQuestionDto>();
         }
     }
 }

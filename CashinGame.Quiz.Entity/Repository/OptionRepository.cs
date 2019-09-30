@@ -2,6 +2,7 @@
 using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,12 @@ namespace CashinGame.Quiz.Entity.Repository
     public class OptionRepository : IOptionRepository, IDisposable
     {
         private ApplicationDbContext _context;
-        public OptionRepository(ApplicationDbContext context)
+        private readonly ILogger<OptionRepository> _logger;
+
+        public OptionRepository(ApplicationDbContext context, ILogger<OptionRepository> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Option>> GetOptionAsync(Guid questionId)

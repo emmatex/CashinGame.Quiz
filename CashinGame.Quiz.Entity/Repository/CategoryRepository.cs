@@ -2,10 +2,10 @@
 using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CashinGame.Quiz.Entity.Repository
@@ -13,9 +13,12 @@ namespace CashinGame.Quiz.Entity.Repository
     public class CategoryRepository : ICategoryRepository, IDisposable
     {
         private ApplicationDbContext _context;
-        public CategoryRepository(ApplicationDbContext context)
+        private readonly ILogger<CategoryRepository> _logger;
+
+        public CategoryRepository(ApplicationDbContext context, ILogger<CategoryRepository> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger;
         }
 
         public void Add(Category category)

@@ -9,6 +9,8 @@ namespace CashinGame.Quiz.Api.Profiles
         public CategoryProfile()
         {
             CreateMap<Category, CategoryDto>();
+            CreateMap<CreateCategoryDto, Category>();
+            CreateMap<UpdateCategoryDto, Category>();
         }
     }
 }

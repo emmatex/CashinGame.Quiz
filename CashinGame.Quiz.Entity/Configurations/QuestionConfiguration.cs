@@ -13,8 +13,8 @@ namespace CashinGame.Quiz.Entity.Configurations
             builder.Property(x => x.Level).HasColumnName("Level").HasMaxLength(100).IsRequired();
             builder.Property(x => x.CategoryId).HasColumnName("CategoryId").HasMaxLength(128).IsRequired();
             builder.Property(x => x.CreatedOn).HasColumnName("CreatedOn");
-            builder.Property(x => x.CreatedBy).HasColumnName("CreatedBy").HasMaxLength(128).IsRequired();
-            builder.Property(x => x.ModifiedBy).HasColumnName("ModifiedBy").HasMaxLength(128).IsRequired();
+            builder.Property(x => x.CreatedBy).HasColumnName("CreatedBy").HasMaxLength(128);
+            builder.Property(x => x.ModifiedBy).HasColumnName("ModifiedBy").HasMaxLength(128);
             builder.Property(x => x.ModifiedOn).HasColumnName("ModifiedOn");
 
             //Index Mapping
