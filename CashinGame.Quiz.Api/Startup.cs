@@ -8,6 +8,7 @@ using CashinGame.Quiz.Entity.Infrastructure;
 using CashinGame.Quiz.Entity.Interface;
 using CashinGame.Quiz.Entity.Repository;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -87,7 +88,8 @@ namespace CashinGame.Quiz.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            ApplicationDbContext appContext)
         {
             if (env.IsDevelopment())
             {
@@ -95,6 +97,21 @@ namespace CashinGame.Quiz.Api
             }
             else
             {
+                app.UseExceptionHandler(appBuilder =>
+                {
+                    appBuilder.Run(async context =>
+                    {
+                        var exceptionHandleFeature = context.Features.Get<IExceptionHandlerFeature>();
+                        if (exceptionHandleFeature != null)
+                        {
+                            var logger = loggerFactory.CreateLogger("Globle exception logger");
+                            logger.LogError(500, exceptionHandleFeature.Error, exceptionHandleFeature.Error.Message);
+                        }
+
+                        context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
+                    });
+                });
                 app.UseHsts();
             }
 
@@ -103,7 +120,7 @@ namespace CashinGame.Quiz.Api
             {
                 s.SwaggerEndpoint($"/swagger/v1/swagger.json", "CashinGame Quiz");
             });
-            context.EnsureSeedDataForContext();
+            appContext.EnsureSeedDataForContext();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
