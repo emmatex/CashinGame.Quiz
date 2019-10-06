@@ -50,14 +50,20 @@ namespace CashinGame.Quiz.Entity.Repository
                 .FirstOrDefaultAsync();
         }
 
-        public void Add(Option option)
+        public void Add(Guid questionId, Option option)
         {
             if (option == null)
             {
                 throw new ArgumentNullException(nameof(option));
             }
 
+            if(questionId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(questionId));
+            }
+
             option.Id = Guid.NewGuid();
+            option.QuestionId = questionId;
             option.CreatedOn = DateTimeOffset.Now.DateTime;
             _context.Options.Add(option);
         }
@@ -84,7 +90,14 @@ namespace CashinGame.Quiz.Entity.Repository
 
         public async Task<bool> SaveChangesAsync()
         {
-            return (await _context.SaveChangesAsync() > 0);
+            try
+            {
+                return (await _context.SaveChangesAsync() > 0);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public void Update(Option option)

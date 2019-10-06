@@ -75,7 +75,14 @@ namespace CashinGame.Quiz.Entity.Repository
 
         public async Task<bool> SaveChangesAsync()
         {
-            return (await _context.SaveChangesAsync() > 0);
+            try
+            {
+                return (await _context.SaveChangesAsync() > 0);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public void Update(Question question)

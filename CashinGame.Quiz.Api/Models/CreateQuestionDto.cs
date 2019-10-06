@@ -1,4 +1,4 @@
-﻿using CashinGame.Quiz.Entity.Models;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,8 +14,11 @@ namespace CashinGame.Quiz.Api.Models
         [MaxLength(4, ErrorMessage = "Level shouldn't have more than 4 characters")]
         public string Level { get; set; }
 
-        public ICollection<Option> Options { get; set; }
-          = new List<Option>();
+        [Required(ErrorMessage = "Category Id is required.")]
+        public Guid CategoryId { get; set; }
+
+        public ICollection<CreateOptionDto> Options { get; set; }
+          = new List<CreateOptionDto>();
 
     }
 }

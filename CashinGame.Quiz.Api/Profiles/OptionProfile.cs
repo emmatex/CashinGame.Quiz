@@ -15,6 +15,7 @@ namespace CashinGame.Quiz.Api.Profiles
             CreateMap<Option, OptionDto>();
             CreateMap<CreateOptionDto, Option>();
             CreateMap<UpdateOptionDto, Option>();
+            CreateMap<Option, UpdateOptionDto>();
         }
     }
 }

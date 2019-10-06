@@ -32,18 +32,18 @@ namespace CashinGame.Quiz.Api.Controllers
 
 
         [HttpGet(Name = "GetOptions")]
-        public async Task<ActionResult<IEnumerable<Option>>> GetOptions(Guid questionId)
+        public async Task<ActionResult<IEnumerable<OptionDto>>> GetOptions(Guid questionId)
         {
             if (!await _questionRepository.isExists(questionId))
                 return NotFound();
 
             var optionsFromRepo = await _optionRepository.GetOptionAsync(questionId);
-            return Ok(_mapper.Map<IEnumerable<Option>>(optionsFromRepo));
+            return Ok(_mapper.Map<IEnumerable<OptionDto>>(optionsFromRepo));
         }
 
 
         [HttpGet("{optionId}", Name = "GetOption")]
-        public async Task<ActionResult<Option>> GetOption(Guid questionId, Guid optionId)
+        public async Task<ActionResult<OptionDto>> GetOption(Guid questionId, Guid optionId)
         {
             if (!await _questionRepository.isExists(questionId))
                 return NotFound();
@@ -51,13 +51,13 @@ namespace CashinGame.Quiz.Api.Controllers
             var optionFromRepo = await _optionRepository.GetOptionAsync(questionId, optionId);
             if (optionFromRepo == null) return NotFound();
 
-            return Ok(_mapper.Map<Option>(optionFromRepo));
+            return Ok(_mapper.Map<OptionDto>(optionFromRepo));
         }
 
         [HttpPost(Name = "CreateOption")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Option>> CreateOption(Guid questionId, [FromBody]CreateOptionDto option)
+        public async Task<ActionResult<OptionDto>> CreateOption(Guid questionId, [FromBody]CreateOptionDto option)
         {
             if (!await _questionRepository.isExists(questionId))
                 return NotFound();
@@ -70,19 +70,19 @@ namespace CashinGame.Quiz.Api.Controllers
                 return BadRequest("The value inputed already exist for that question");
 
             var optionToAdd = _mapper.Map<Option>(option);
-            _optionRepository.Add(optionToAdd);
+            _optionRepository.Add(questionId, optionToAdd);
 
             if (!await _optionRepository.SaveChangesAsync())
                 throw new Exception("An error occured while trying to save option");
 
             return CreatedAtRoute("GetOption", new { questionId, optionId = optionToAdd.Id },
-                _mapper.Map<Option>(optionToAdd));
+                _mapper.Map<OptionDto>(optionToAdd));
         }
 
         [HttpPut("{optionId}", Name = "UpdateOption")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Option>> UpdateOption(Guid questionId, Guid optionId, [FromBody]UpdateOptionDto option)
+        public async Task<ActionResult<OptionDto>> UpdateOption(Guid questionId, Guid optionId, [FromBody]UpdateOptionDto option)
         {
             if (option == null) return BadRequest();
 
@@ -95,18 +95,18 @@ namespace CashinGame.Quiz.Api.Controllers
             var optionFromRepo = await _optionRepository.GetOptionAsync(questionId, optionId);
             if (optionFromRepo == null)
             {
-                var optionToAdd = Mapper.Map<Option>(option);
+                var optionToAdd = _mapper.Map<Option>(option);
                 optionToAdd.Id = optionId;
                 _questionRepository.AddOptionForQuestion(questionId, optionToAdd);
 
                 if (!await _optionRepository.SaveChangesAsync())
                     throw new Exception($"Upserting option {optionId} for question {questionId} failed on save.");
 
-                var optionToReturn = Mapper.Map<OptionDto>(optionToAdd);
+                var optionToReturn = _mapper.Map<OptionDto>(optionToAdd);
                 return CreatedAtRoute("GetOption", new { id = optionToReturn.Id }, optionToReturn);
             }
 
-            Mapper.Map(option, optionFromRepo);
+            _mapper.Map(option, optionFromRepo);
             _optionRepository.Update(optionFromRepo);
 
             if (!await _optionRepository.SaveChangesAsync())

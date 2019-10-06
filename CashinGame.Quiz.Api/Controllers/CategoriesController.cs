@@ -32,7 +32,7 @@ namespace CashinGame.Quiz.Api.Controllers
         /// </summary>
         /// <returns>An ActionResult of type IEnumerable of Category</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
         {
             var categoriesFromRepo = await _repository.GetAsync();
             return Ok(_mapper.Map<IEnumerable<CategoryDto>>(categoriesFromRepo));
@@ -63,7 +63,7 @@ namespace CashinGame.Quiz.Api.Controllers
         [HttpPost()]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryDto category)
+        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryDto category)
         {
             if (category == null) return BadRequest();
 
@@ -79,7 +79,7 @@ namespace CashinGame.Quiz.Api.Controllers
                 throw new Exception("Creating  category failed on save.");
 
             return CreatedAtRoute("GetCategory", new { categoryId = categoryToAdd.Id },
-                _mapper.Map<Category>(categoryToAdd));
+                _mapper.Map<CategoryDto>(categoryToAdd));
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace CashinGame.Quiz.Api.Controllers
         [HttpPut("{categoryId}", Name = "UpdateCategory")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
-        public async Task<ActionResult<Category>> UpdateCategory(Guid categoryId, UpdateCategoryDto category)
+        public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid categoryId, UpdateCategoryDto category)
         {
             if (category == null) return BadRequest();
 
@@ -106,7 +106,7 @@ namespace CashinGame.Quiz.Api.Controllers
             if (!await _repository.SaveChangesAsync())
                 throw new Exception("An error occured while trying to updating categories");
 
-            return Ok(_mapper.Map<Category>(categoryFromRepo));
+            return Ok(_mapper.Map<CategoryDto>(categoryFromRepo));
         }
 
         /// <summary>

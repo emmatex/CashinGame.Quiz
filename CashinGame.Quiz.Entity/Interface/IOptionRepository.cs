@@ -9,7 +9,7 @@ namespace CashinGame.Quiz.Entity.Interface
     {
         Task<IEnumerable<Option>> GetOptionAsync(Guid questionId);
         Task<Option> GetOptionAsync(Guid questionId, Guid optionId);
-        void Add(Option option);
+        void Add(Guid questionId, Option option);
         void Delete(Option option);
         void Update(Option option);
         Task<bool> isExists(Guid questionId, string value);
